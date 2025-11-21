@@ -1,0 +1,22 @@
+{
+  "name": "car_rentalnew",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Running dummy tests...\"",
+    "build": "echo \"Building static project...\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shntnu45/Car_RentalNew.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shntnu45/Car_RentalNew/issues"
+  },
+  "homepage": "https://github.com/Shntnu45/Car_RentalNew#readme",
+  "description": ""
+}
