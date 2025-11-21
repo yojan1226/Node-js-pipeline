@@ -1,0 +1,70 @@
+---
+- name: Install Docker & Minikube on EC2 Amazon Linux 2
+  hosts: myec2
+  become: yes
+
+  vars:
+    docker_package: docker
+    minikube_version: v1.33.1
+
+  tasks:
+
+   
+    # Install Docker
+  
+    - name: Install docker
+      yum:
+        name: "{{ docker_package }}"
+        state: present
+
+    - name: Enable and start docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    
+    # Install dependencies for Minikube
+   
+    - name: Install required packages
+      yum:
+        name:
+          - conntrack
+          - wget
+        state: present
+
+    
+    # Install Minikube
+   
+    - name: Download Minikube binary
+      get_url:
+        url: "https://storage.googleapis.com/minikube/releases/{{ minikube_version }}/minikube-linux-amd64"
+        dest: /usr/local/bin/minikube
+        mode: '0755'
+
+    
+    # Install Kubectl
+    
+    - name: Download kubectl
+      get_url:
+        url: "https://storage.googleapis.com/kubernetes-release/release/v1.30.0/bin/linux/amd64/kubectl"
+        dest: /usr/local/bin/kubectl
+        mode: '0755'
+
+    
+    # Start Minikube
+    
+    - name: Start Minikube using Docker Driver
+      become_user: ec2-user
+      environment:
+        CHANGE_MINIKUBE_NONE_USER: "true"
+      shell: |
+        minikube start --driver=docker
+      args:
+        executable: /bin/bash

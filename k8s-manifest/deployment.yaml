@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carrental
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: carrental
+  template:
+    metadata:
+      labels:
+        app: carrental
+    spec:
+      containers:
+        - name: carrental
+          image: honey120ar/carrental:latest
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: carrental-service
+spec:
+  selector:
+    app: carrental
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+      nodeport: 30080
+  type: NodePort
