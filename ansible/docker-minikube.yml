@@ -58,15 +58,18 @@
         mode: '0755'
 
     # ----------------------
-    # Start Minikube
+    # Start Minikube (IMPORTANT)
     # ----------------------
-    - name: Restart Docker to refresh permissions
+    - name: Restart Docker
       service:
         name: docker
         state: restarted
 
-    - name: Start Minikube using Docker Driver (run as root)
+    - name: Start Minikube as ec2-user
+      become: yes
+      become_user: ec2-user
       shell: |
+        export CHANGE_MINIKUBE_NONE_USER=true
         minikube start --driver=docker --force
       args:
         executable: /bin/bash
