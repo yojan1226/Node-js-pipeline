@@ -37,7 +37,7 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage("Docker Build & Push") {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
@@ -75,12 +75,14 @@ pipeline {
 
         stage('Create Dynamic Inventory') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
-                                                  keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')
+                ]) {
                     sh """
                         cd ansible
-                        echo '[server]' > inventory.ini
-                        echo '${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=${SSH_KEY}' >> inventory.ini
+                        echo "[server]" > inventory.ini
+                        echo "${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=${SSH_KEY}" >> inventory.ini
+                        cat inventory.ini
                     """
                 }
             }
@@ -88,11 +90,12 @@ pipeline {
 
         stage('Run Ansible') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
-                                                  keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')
+                ]) {
                     sh """
                         cd ansible
-                        ansible-playbook -i inventory.ini docker-minikube.yml
+                        ansible-playbook -i inventory.ini docker-minikube.yml --private-key ${SSH_KEY}
                     """
                 }
             }
@@ -104,26 +107,24 @@ pipeline {
                     env.MINIKUBE_IP = env.EC2_PUBLIC_IP
                 }
 
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
-                                                  keyFileVariable: 'SSH_KEY')]) {
-
-                    sh '''
+                withCredentials([
+                    sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')
+                ]) {
+                    sh """
                         cd k8s-manifest
 
                         echo "Copying deployment file..."
-                        scp -i $SSH_KEY -o StrictHostKeyChecking=no deployment.yaml ec2-user@$MINIKUBE_IP:/home/ec2-user/
+                        scp -i ${SSH_KEY} -o StrictHostKeyChecking=no deployment.yaml ec2-user@${MINIKUBE_IP}:/home/ec2-user/
 
                         echo "Deleting old deployment..."
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ec2-user@$MINIKUBE_IP "kubectl delete -f /home/ec2-user/deployment.yaml --ignore-not-found=true"
+                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl delete -f /home/ec2-user/deployment.yaml --ignore-not-found=true"
 
                         echo "Applying new deployment..."
-                        ssh -i $SSH_KEY -o StrictHostKeyChecking=no ec2-user@$MINIKUBE_IP "kubectl apply -f /home/ec2-user/deployment.yaml"
-                    '''
+                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl apply -f /home/ec2-user/deployment.yaml"
+                    """
                 }
             }
         }
-
-
 
     } // stages
 } // pipeline
