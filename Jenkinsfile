@@ -78,7 +78,7 @@ pipeline {
                 sh """
                     cd ansible
                     echo '[server]' > inventory.ini
-                    echo '${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=/var/lib/jenkins/key.pem' >> inventory.ini
+                    echo '${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=/var/lib/jenkins/awskey.pem' >> inventory.ini
                 """
             }
         }
