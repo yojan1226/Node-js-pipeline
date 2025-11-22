@@ -1,0 +1,30 @@
+# Ignore CI/CD config
+Jenkinsfile
+
+# Ignore Terraform files
+terraform/
+
+# Ignore Kubernetes manifests
+k8s-manifest/
+
+# Ignore Ansible playbooks
+ansible/
+
+# Ignore Git metadata
+.git/
+.gitignore
+
+# Ignore VSCode workspace settings
+.vscode/
+
+# Ignore Node modules (if accidentally present)
+node_modules/
+
+# Ignore keys and sensitive files
+*.pem
+*.pub
+*.key
+
+# Logs
+npm-debug.log
+yarn-error.log
