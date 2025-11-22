@@ -75,7 +75,8 @@ pipeline {
 
         stage('Create Dynamic Inventory') {
             steps {
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
+                                                  keyFileVariable: 'SSH_KEY')]) {
                     sh """
                         cd ansible
                         echo '[server]' > inventory.ini
@@ -85,22 +86,27 @@ pipeline {
             }
         }
 
-
         stage('Run Ansible') {
             steps {
-                sh """
-                    cd ansible
-                    ansible-playbook -i inventory.ini docker-minikube.yml
-                """
+                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
+                                                  keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        cd ansible
+                        ansible-playbook -i inventory.ini docker-minikube.yml
+                    """
+                }
             }
         }
 
         stage('Deploying on EC2 Minikube Cluster') {
             steps {
                 script {
-                    env.MINIKUBE_IP = env.EC2_PUBLIC_IP  // for Amazon Linux
+                    env.MINIKUBE_IP = env.EC2_PUBLIC_IP
                 }
-                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')]) {
+
+                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key',
+                                                  keyFileVariable: 'SSH_KEY')]) {
+
                     sh '''
                         cd k8s-manifest
 
@@ -119,6 +125,5 @@ pipeline {
 
 
 
-
     } // stages
-} //pipeline
+} // pipeline
