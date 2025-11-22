@@ -12,6 +12,7 @@ resource "aws_instance" "node_server" {
 
 resource "aws_key_pair" "ec2_key" {
     key_name = "awskey"
-    public_key = file("$path.module}/keys/awskey.pub")
+    public_key = file("${path.module}/keys/awskey.pub")
+
   
 }
