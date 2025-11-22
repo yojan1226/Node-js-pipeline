@@ -75,13 +75,16 @@ pipeline {
 
         stage('Create Dynamic Inventory') {
             steps {
-                sh """
-                    cd ansible
-                    echo '[server]' > inventory.ini
-                    echo '${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=/var/lib/jenkins/awskey.pem' >> inventory.ini
-                """
+                withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')]) {
+                    sh """
+                        cd ansible
+                        echo '[server]' > inventory.ini
+                        echo '${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=${SSH_KEY}' >> inventory.ini
+                    """
+                }
             }
         }
+
 
         stage('Run Ansible') {
             steps {
