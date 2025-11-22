@@ -67,6 +67,6 @@
 
     - name: Start Minikube using Docker Driver (run as root)
       shell: |
-        minikube start --driver=docker
+        minikube start --driver=docker --force
       args:
         executable: /bin/bash
