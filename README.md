@@ -70,5 +70,6 @@ This setup ensures that infrastructure provisioning, application deployment, and
 
 ---
 
-## Folder Structure
+## Flow diagram
+<img width="1184" height="864" alt="Gemini_Generated_Image_34txhi34txhi34tx" src="https://github.com/user-attachments/assets/634b3476-8ab9-4aa0-898b-d09bf31f58c2" />
 
