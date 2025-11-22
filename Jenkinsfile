@@ -78,8 +78,14 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')]) {
                     sh """
                         cd ansible
+
+                        # Write SSH key to stable location
+                        cp $SSH_KEY /tmp/minikube-key.pem
+                        chmod 600 /tmp/minikube-key.pem
+
                         echo "[server]" > inventory.ini
-                        echo "${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=$SSH_KEY" >> inventory.ini
+                        echo "${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=/tmp/minikube-key.pem" >> inventory.ini
+
                         echo "Generated inventory:"
                         cat inventory.ini
                     """
@@ -92,8 +98,9 @@ pipeline {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-minikube-key', keyFileVariable: 'SSH_KEY')]) {
                     sh """
                         cd ansible
-                        echo "Running Ansible with SSH KEY: ${SSH_KEY}"
-                        ansible-playbook -i inventory.ini docker-minikube.yml --private-key $SSH_KEY
+
+                        echo "Running Ansible..."
+                        ansible-playbook -i inventory.ini docker-minikube.yml --private-key /tmp/minikube-key.pem
                     """
                 }
             }
@@ -108,18 +115,21 @@ pipeline {
                     sh """
                         cd k8s-manifest
 
+                        # Ensure same stable key path
+                        cp $SSH_KEY /tmp/minikube-key.pem
+                        chmod 600 /tmp/minikube-key.pem
+
                         echo "Copying deployment file..."
-                        scp -i ${SSH_KEY} -o StrictHostKeyChecking=no deployment.yaml ec2-user@${MINIKUBE_IP}:/home/ec2-user/
+                        scp -i /tmp/minikube-key.pem -o StrictHostKeyChecking=no deployment.yaml ec2-user@${MINIKUBE_IP}:/home/ec2-user/
 
                         echo "Deleting old deployment..."
-                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl delete -f /home/ec2-user/deployment.yaml --ignore-not-found=true"
+                        ssh -i /tmp/minikube-key.pem -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl delete -f /home/ec2-user/deployment.yaml --ignore-not-found=true"
 
                         echo "Applying new deployment..."
-                        ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl apply -f /home/ec2-user/deployment.yaml"
+                        ssh -i /tmp/minikube-key.pem -o StrictHostKeyChecking=no ec2-user@${MINIKUBE_IP} "kubectl apply -f /home/ec2-user/deployment.yaml"
                     """
                 }
             }
         }
-
-    } //stages
-}//pipeline
+    }
+}
