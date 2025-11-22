@@ -1,6 +1,6 @@
 ---
 - name: Install Docker & Minikube on EC2 Amazon Linux 2
-  hosts: myec2
+  hosts: server
   become: yes
 
   vars:
