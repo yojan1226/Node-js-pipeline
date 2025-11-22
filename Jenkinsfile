@@ -79,7 +79,7 @@ pipeline {
                     sh """
                         cd ansible
                         echo "[server]" > inventory.ini
-                        echo "${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=${SSH_KEY}" >> inventory.ini
+                        echo "${EC2_PUBLIC_IP} ansible_user=ec2-user ansible_ssh_private_key_file=$SSH_KEY" >> inventory.ini
                         echo "Generated inventory:"
                         cat inventory.ini
                     """
@@ -93,7 +93,7 @@ pipeline {
                     sh """
                         cd ansible
                         echo "Running Ansible with SSH KEY: ${SSH_KEY}"
-                        ansible-playbook -i inventory.ini docker-minikube.yml --private-key ${SSH_KEY}
+                        ansible-playbook -i inventory.ini docker-minikube.yml --private-key $SSH_KEY
                     """
                 }
             }
@@ -120,5 +120,6 @@ pipeline {
                 }
             }
         }
-    }
-}
+
+    } //stages
+}//pipeline
