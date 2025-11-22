@@ -87,7 +87,7 @@ pipeline {
             steps {
                 sh """
                     cd ansible
-                    ansible-playbook -i inventory.ini docker-minikube.yml
+                    ansible-playbook -i inventory.ini docker-minikube.yaml
                 """
             }
         }
