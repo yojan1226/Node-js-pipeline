@@ -54,9 +54,10 @@
     # ----------------------
     - name: Download kubectl
       get_url:
-        url: "https://storage.googleapis.com/kubernetes-release/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
-        dest: /usr/local/bin/kubectl
-        mode: '0755'
+       url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+       dest: /usr/local/bin/kubectl
+       mode: '0755'
+
 
     # ----------------------
     # Start Minikube
