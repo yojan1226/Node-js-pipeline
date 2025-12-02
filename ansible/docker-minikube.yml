@@ -62,14 +62,6 @@
     # ----------------------
     # Start Minikube
     # ----------------------
-    - name: Ensure ec2-user has Docker permissions
-      become: yes
-      become_user: ec2-user
-      shell: |
-        newgrp docker
-      args:
-        executable: /bin/bash
-
     - name: Start Minikube as ec2-user
       become: yes
       become_user: ec2-user
